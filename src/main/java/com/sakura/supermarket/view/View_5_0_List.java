@@ -35,7 +35,11 @@ public class View_5_0_List {
 					// 0 - Quantidade no estoque
 					// 1 - Cálculo de quantidade necessária por mês
 					if (param == 0) {
-						buy = p.getMax_purchase() - p.getStock_quantity();
+						
+						if((p.getStock_quantity() * p.getDuration()) < 35) {
+							buy = p.getMax_purchase() - p.getStock_quantity();
+						}
+						
 					} else {
 						buy = (int) Math.ceil(30 / (double) p.getDuration()) - p.getStock_quantity();
 					}

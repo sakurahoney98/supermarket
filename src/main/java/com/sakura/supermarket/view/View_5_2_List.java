@@ -127,14 +127,14 @@ int columns = 0;
 	        			table.addCell(" ");
 	        			}
 	        	}else {
-	        	
+	        		if(columns > 2) {
+	        			table.addCell("");
+	        			table.addCell("");
+	        			}
+	        		
 	        		for(int j = 0; j < list_1.size(); j++) {
 	        			
-	        			if(columns > 2) {
-		        			table.addCell("");
-		        			table.addCell("");
-		        			}
-		        		
+	        		
 		        			ProductModel product = list_1.get(j);
 		        			
 		        			

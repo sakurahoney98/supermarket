@@ -51,45 +51,7 @@ public class ProductPersistence {
 		try {
 			st = connection.createStatement();
 
-			if (column.equals(ProductEnum.STOCK.getNome())) {
-				ResultSet rs = null;
-				String sql_conditional = "SELECT " + ProductEnum.STOCK.getNome() + " FROM "
-						+ ProductEnum.TABELA.getNome() + " WHERE " + ProductEnum.ID.getNome() + " = " + id_product;
-				rs = st.executeQuery(sql_conditional);
-				rs.next();
-				int amount_previous = rs.getInt(1);
-
-				long days = 0;
-				LocalDate today = LocalDate.now();
-
-				sql_conditional = "SELECT MAX(" + ReportEnum.DATE_BUY.getNome() + ") FROM " + ReportEnum.TABELA.getNome() + " WHERE "
-						+ ReportEnum.ID_PRODUCT.getNome() + " = " + id_product + " AND " + ReportEnum.DATE_BUY.getNome()
-						+ " < '01-" + today.getMonthValue() + "-" + today.getYear() + "' ";
-
-				rs = st.executeQuery(sql_conditional);
-				rs.next();
-				if (rs.getString(1) != null) {
-
-					DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-					LocalDate date = LocalDate.parse(rs.getString(1), format);
-
-					days = ChronoUnit.DAYS.between(date, today);
-
-				}
-
-				String campos = ReportEnum.ID_PRODUCT.getNome() + " , " + ReportEnum.DATE_BUY.getNome() + " , "
-						+ ReportEnum.AMOUNT_PREVIOUS.getNome() + " , " + ReportEnum.AMOUNT_CURRENT.getNome() + " , "
-						+ ReportEnum.AMOUNT_BUY.getNome() + " , " + ReportEnum.DAYS.getNome();
-
-				sql_conditional = "INSERT INTO " + ReportEnum.TABELA.getNome() + "(" + campos + ") VALUES ("
-						+ id_product + " , '" + today + "', " + amount_previous + " , " + value + " , "
-						+ (Integer.parseInt(value) - amount_previous) + " , " + days + ")";
-				
-				st.executeUpdate(sql_conditional);
-
-			}
-
+			
 			String sql = " UPDATE " + ProductEnum.TABELA.getNome() + " SET " + column + " = '" + value + "' WHERE "
 					+ ProductEnum.ID.getNome() + " = " + id_product;
 
@@ -111,6 +73,44 @@ public class ProductPersistence {
 
 		try {
 			st = connection.createStatement();
+			
+			if (column.equals(ProductEnum.STOCK.getNome())) {
+				String campos = ReportEnum.ID_PRODUCT.getNome() + " , " + ReportEnum.DATE_BUY.getNome() + " , "
+						+ ReportEnum.AMOUNT_PREVIOUS.getNome() + " , " + ReportEnum.AMOUNT_CURRENT.getNome() + " , "
+						+ ReportEnum.AMOUNT_BUY.getNome() + " , " + ReportEnum.DAYS.getNome();
+
+				ResultSet rs = null;
+
+				int amount_previous = 0;
+				long days = 0;
+				LocalDate today = LocalDate.now();
+
+				String sql_conditional = "SELECT " + campos + " FROM " + ReportEnum.TABELA.getNome() + " WHERE "
+						+ ProductEnum.ID.getNome() + " = " + id_product + " ORDER BY " + ReportEnum.DATE_BUY.getNome()
+						+ " DESC LIMIT 1";
+				rs = st.executeQuery(sql_conditional);
+				
+
+				if (rs.next()) {
+
+					DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+					LocalDate date = LocalDate.parse(rs.getString(2), format);
+
+					days = ChronoUnit.DAYS.between(date, today);
+					
+					amount_previous = rs.getInt(4);
+
+				}
+
+				sql_conditional = "INSERT INTO " + ReportEnum.TABELA.getNome() + "(" + campos + ") VALUES ("
+						+ id_product + " , '" + today + "', " + amount_previous + " , " + value + " , "
+						+ (value - amount_previous) + " , " + days + ")";
+
+				st.executeUpdate(sql_conditional);
+
+			}
+
 
 			String sql = " UPDATE " + ProductEnum.TABELA.getNome() + " SET " + column + " = " + value + " WHERE "
 					+ ProductEnum.ID.getNome() + " = " + id_product;

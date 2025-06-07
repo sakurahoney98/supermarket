@@ -20,7 +20,7 @@ public class UpdateCSV {
     	pp.setConnection(connection);
     	
     		
-        String csvFile = "C:/Users/User/Desktop/data-1719849977752.csv"; // Defina o caminho do arquivo CSV
+        String csvFile = "C:/Users/User/Desktop/insert_db.csv"; // Defina o caminho do arquivo CSV
         String linha = "";
         String divisor = ";"; // Separador de colunas (pode ser adaptado se necessário)
 
@@ -31,15 +31,19 @@ public class UpdateCSV {
             	
                 // Divide a linha pelas vírgulas (ou outro separador)
                 String[] colunas = linha.split(divisor);
-                String id_aux = colunas[0];
+                String id_aux = colunas[0].replace("\uFEFF", "");
+                
                 
                 int id = Integer.parseInt(id_aux);
+                int value = Integer.parseInt(colunas[2].replace("\uFEFF", ""));
+                
                 
            
             
                 
                 //pp.editProduct(id, ProductEnum.PURCHASE_DATE.getNome(), colunas[3]);
-                pp.editProduct(id, ProductEnum.STOCK.getNome(), colunas[2]);
+                pp.editProduct(id, ProductEnum.STOCK.getNome(), value);
+                //pp.editProduct(id, ProductEnum.STOCK.getNome(), value, "07/06/2025");
                 
 				
 				System.out.println("[" + id + "] " + colunas[1] + " atualizado!");

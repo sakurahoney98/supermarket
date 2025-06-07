@@ -21,6 +21,7 @@ public class View_5_0_List {
 
 		// Pegando a lista de todos os produtos cadastrados no sistema
 		for (ProductModel p : list) {
+			
 
 			// Verificando se a quantidade de produtos no estoque é 0
 			// Caso seja ele automaticamente inclui na lista de compra ou na confirmação de
@@ -113,7 +114,12 @@ public class View_5_0_List {
 						buy = (int) Math.ceil(30 / (double) p.getDuration()) - p.getStock_quantity();
 					}
 					p.setBuy(buy);
+				}else {
+					buy = p.getMax_purchase() - p.getStock_quantity();
 				}
+				
+				p.setBuy(buy);
+				
 				if (!p.isConfirm()) {
 					new_list.add(p);
 				} else {

@@ -50,6 +50,7 @@ public class ProductPersistence {
 
 		try {
 			st = connection.createStatement();
+			
 
 			
 			String sql = " UPDATE " + ProductEnum.TABELA.getNome() + " SET " + column + " = '" + value + "' WHERE "
@@ -74,7 +75,7 @@ public class ProductPersistence {
 		try {
 			st = connection.createStatement();
 			
-
+			
 
 			String sql = " UPDATE " + ProductEnum.TABELA.getNome() + " SET " + column + " = " + value + " WHERE "
 					+ ProductEnum.ID.getNome() + " = " + id_product;
@@ -105,37 +106,41 @@ public class ProductPersistence {
 
 					ResultSet rs = null;
 					
-					DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+					DateTimeFormatter formatEnglish = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+					DateTimeFormatter formatPt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+					
 
 					int amount_previous = 0;
 					long days = 30;
-					LocalDate today = LocalDate.parse(data, format);
+					LocalDate today = LocalDate.parse(data, formatPt);
 
 					String sql_conditional = "SELECT " + ProductEnum.PURCHASE_DATE.getNome() + " FROM " + ProductEnum.TABELA.getNome() + " WHERE "
 							+ ProductEnum.ID.getNome() + " = " + id_product;
+					
 					rs = st.executeQuery(sql_conditional);
 					
-
-					if (rs.next()) {
-
-						
-
-						LocalDate date = LocalDate.parse(rs.getString(2), format);
-
-						days = ChronoUnit.DAYS.between(date, today);
-						
-						amount_previous = rs.getInt(4);
-
+					rs.next();
+					
+					LocalDate date = LocalDate.parse(rs.getString(1), formatEnglish);
+					
+					days = ChronoUnit.DAYS.between(date, today);
+					
+					sql_conditional = "SELECT " + ReportEnum.AMOUNT_CURRENT.getNome() + " FROM " + ReportEnum.TABELA.getNome() + " WHERE "
+							+ ProductEnum.ID.getNome() + " = " + id_product;
+					
+					rs = st.executeQuery(sql_conditional);
+				
+					
+					if(rs.next()) {
+						amount_previous = rs.getInt(1);
 					}
+					
 
 					sql_conditional = "INSERT INTO " + ReportEnum.TABELA.getNome() + "(" + campos + ") VALUES ("
 							+ id_product + " , '" + today + "', " + amount_previous + " , " + value + " , "
 							+ (value - amount_previous) + " , " + days + ")";
 
 					st.executeUpdate(sql_conditional);
-
-				
-
 
 				String sql = " UPDATE " + ProductEnum.TABELA.getNome() + " SET " + column + " = " + value + " WHERE "
 						+ ProductEnum.ID.getNome() + " = " + id_product;

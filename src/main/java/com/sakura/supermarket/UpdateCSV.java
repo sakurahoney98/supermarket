@@ -31,19 +31,17 @@ public class UpdateCSV {
             	
                 // Divide a linha pelas vírgulas (ou outro separador)
                 String[] colunas = linha.split(divisor);
-                String id_aux = colunas[0].replace("\uFEFF", "");
-                
-                
-                int id = Integer.parseInt(id_aux);
+              
+                int id = Integer.parseInt(colunas[0].replace("\uFEFF", ""));
                 int value = Integer.parseInt(colunas[2].replace("\uFEFF", ""));
                 
                 
            
             
+                pp.editProduct(id, ProductEnum.STOCK.getNome(), value, "07/06/2025");
+                pp.editProduct(id, ProductEnum.PURCHASE_DATE.getNome(), colunas[3]);
+                //pp.editProduct(id, ProductEnum.STOCK.getNome(), value);
                 
-                //pp.editProduct(id, ProductEnum.PURCHASE_DATE.getNome(), colunas[3]);
-                pp.editProduct(id, ProductEnum.STOCK.getNome(), value);
-                //pp.editProduct(id, ProductEnum.STOCK.getNome(), value, "07/06/2025");
                 
 				
 				System.out.println("[" + id + "] " + colunas[1] + " atualizado!");
